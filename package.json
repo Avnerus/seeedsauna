@@ -1,0 +1,63 @@
+{
+  "name": "seeedsauna",
+  "version": "1.0.0",
+  "description": "seeedsauna",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server/index.js --exec babel-node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Avnerus/seeedsauna.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Avnerus/divine/issues"
+  },
+  "homepage": "https://github.com/Avnerus/divine#readme",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "babel-loader": "^8.0.4",
+    "css-loader": "^2.0.1",
+    "file-loader": "^3.0.1",
+    "nodemon": "^1.18.9",
+    "sass-loader": "^7.1.0",
+    "socket.io-client": "^3.0.3",
+    "style-loader": "^0.23.1",
+    "url-loader": "^1.1.2",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-middleware": "^3.7.0",
+    "webpack-dev-server": "^3.1.10",
+    "webpack-hot-middleware": "^2.24.3"
+  },
+  "window": {
+    "title": "SeeedSauna",
+    "toolbar": false,
+    "frame": false,
+    "width": 1920,
+    "height": 1080,
+    "position": "mouse",
+    "fullscreen": true
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.2.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.14.0",
+    "fullscreen": "^1.1.0",
+    "hybrids": "^4.0.2",
+    "redux": "^4.0.1",
+    "socket.io": "^3.0.3"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "client/*"
+    ]
+  }
+}
