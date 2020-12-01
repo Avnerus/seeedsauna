@@ -2,10 +2,12 @@ import {createStore} from 'redux';
 
 const onSensorUpdate = (data) => {
   console.log("Sensor update!", data)
+  store.dispatch(setSensorData(data));
 }
 
 const reducer = (state = {
     socket: null,
+    sensorData: null
 }, action) => {
   switch (action.type) {
     case 'SET_SOCKET': {
@@ -15,6 +17,9 @@ const reducer = (state = {
       }
       action.socket.on('sensorUpdate', onSensorUpdate)
       return {...state, socket: action.socket}
+    }
+    case 'SET_SENSOR_DATA': {
+      return {...state, sensorData: action.data}
     }
     default:
       return state;
@@ -32,6 +37,11 @@ export default store;
 export const setSocket = (socket) => ({
     type: 'SET_SOCKET_CONTROLLER',
     socket
+})
+
+export const setSensorData = (data) => ({
+    type: 'SET_SENSOR_DATA',
+    data
 })
 
 export const connect = (store, mapState) => ({

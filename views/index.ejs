@@ -1,9 +1,11 @@
 <!doctype html>
 <html>
     <head>
-       <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800&display=swap" rel="stylesheet">
         <title>SEEED Sauna</title>
         <style>
           body, html {
@@ -13,6 +15,11 @@
     </head>
     <body>
         <sauna-main></sauna-main>
+        <%if (sensorData) { %>
+          <script>
+            window.initialSensorData = '<%-JSON.stringify(sensorData)%>'
+          </script>
+        <% } %>
         <script src="bundle.js"></script>
     </body>
 </html>
