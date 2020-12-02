@@ -13,7 +13,7 @@
   #define WifiSerial Serial1
 #elif defined(ARDUINO_SEEED_ZERO) 
   //the different board of samd have different serialx
-  #define WifiSerial Serial2   //serial number of seeeduino_zero (compatible with Wio Lite W600)
+   WifiSerial Serial2   //serial number of seeeduino_zero (compatible with Wio Lite W600)
 #elif defined(SEEED_XIAO_M0) 
     #define WifiSerial Serial1   
 #else
@@ -40,11 +40,15 @@ SHT35 sensor(SCLPIN);
 
 AtWifi wifi;
 
-const char *TARGET_IP   = "\"52.72.201.158\""; // This is the IP address for AdafruitIO
+char req[256];
+
+const char *TARGET_IP   = "\"sauna.avner.us\""; // This is the IP address for AdafruitIO
 uint16_t TARGET_PORT = 80;
 uint16_t LOCAL_PORT  = 1234;
 
 bool connecting = false;
+bool sending = false;
+int wifiStatus = 0;
 
 int connect_to_AP(int retries){
   bool ssid_set = false;
@@ -53,7 +57,7 @@ int connect_to_AP(int retries){
   int attempt = 0;
   debug.println(F("setting ssid ..."));
   while (!ssid_set && attempt < retries){
-      ssid_set = wifi.wifiStaSetTargetApSsid(F("Digital Style_EXT"));
+      ssid_set = wifi.wifiStaSetTargetApSsid(F("Digital Style"));
       delay(150);
   } if (!ssid_set){
     debug.println(F("failed to set ssid"));
@@ -84,7 +88,6 @@ int connect_to_AP(int retries){
 }
 
 
-char value[] = "value=44.6\n\n"; // the data to post
 int socket = -1;
 void setup()
 {
@@ -98,32 +101,17 @@ void setup()
 
     wifi.begin(WifiSerial,9600);
     wifi.sendAT(F("AT+WLEAV"));
-    delay(1000);
-
-    /*
-    configure_wifi(5);
-    connect_to_AP(5);
-    
-    socket = create_socket(5);*/
- 
-    //wifi.httpPost(
-    //  socket,
-    //  F("POST /api/v2/your_username/feeds/your_feed/data HTTP/1.1\n"), //TODO replace your_username and your_feed with the corresponding values from AdafruitIO
-    //  F("Host: io.adafruit.com\n"),
-    //  F("User-Agent: arduino\n"),
-    //  F("Content-Type: application/x-www-form-urlencoded\n"),
-    //  F("Accept: */*\nX-AIO-Key: your_X-AIO-Key\n"), //TODO put in your_X-AIO-Key from AdafruitIO
-    //  value
-    //);      
+    delay(1000);   
 }
 
 void loop()
 {
-  if (!connecting) {
+  if (!connecting && !sending) {
+    debug.println("Checking status");
     wifi.sendAT(F("AT+LKSTT"));
     const char* resp = wifi.buffer();
     int wifiStatus = atoi(&(resp[4]));
-    debug.print("wifi status buffer: "); debug.println(resp[4]);
+    //debug.print("wifi status buffer: "); debug.println(resp[4]);
     debug.print("Current wifi status: "); debug.println(wifiStatus);
     
     if (!wifiStatus) {
@@ -133,9 +121,11 @@ void loop()
       configure_wifi(5);
       if (connect_to_AP(5)) {
         connecting = false;
-        delay(2000);
+        //wifiStatus = 1;
+        delay(1000);
       }
     } else {
+          sending = true;
           u16 value=0;
           u8 data[6]={0};
           float temp,hum;
@@ -156,8 +146,30 @@ void loop()
             debug.println(" % ");
       
             debug.println("   ");
+
+            char tempStr[10];
+            char humStr[10];
+            
+            dtostrf(temp,2,2, tempStr);
+            dtostrf(hum,2,2, humStr);
+
+            socket = create_socket(5);
+            
+            sprintf(req, "{\"data\": {\"temperature\": %s,\"humidity\": %s}}\n\n",tempStr, humStr);
+            debug.println(req);                      
+            wifi.httpPost(
+                  socket,
+                  F("POST /sensor HTTP/1.1\n"),
+                  F("Host: sauna.avner.us\n"),
+                  F("User-Agent: arduino\n"),
+                  F("Content-Type: application/json\n"),
+                  F("Accept: application/json\n"),
+                  req
+            );  
+            wifi.wifiCloseSpecSocket(socket);
+            sending = false;
           }
-          delay(2000);
+      
     } 
   }  
 }
