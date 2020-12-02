@@ -13,9 +13,9 @@ const reducer = (state = {
     case 'SET_SOCKET': {
       console.log("Setting socket", action.socket);
       if (state.socket) {
-        state.socket.off('sensorUpdate', onSensorUpdate)
+        state.socket.off('sensor-data', onSensorUpdate)
       }
-      action.socket.on('sensorUpdate', onSensorUpdate)
+      action.socket.on('sensor-data', onSensorUpdate)
       return {...state, socket: action.socket}
     }
     case 'SET_SENSOR_DATA': {
@@ -35,7 +35,7 @@ const store = createStore(
 export default store;
 
 export const setSocket = (socket) => ({
-    type: 'SET_SOCKET_CONTROLLER',
+    type: 'SET_SOCKET',
     socket
 })
 

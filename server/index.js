@@ -9,10 +9,13 @@ import socketIo from 'socket.io'
 
 const app = express();
 const server = Server(app);
+const io = socketIo(server);
 
 const compiler = webpack(webpackConfig);
 
 let sensorData = null;
+
+app.use(bodyParser.json());
 
 app.use(
     WebpackMiddleware(compiler, {
@@ -20,12 +23,13 @@ app.use(
     })
 );
 app.use(WebpackHotMiddleware(compiler));
-app.use(bodyParser.json());
+
 app.set('view engine', 'ejs')
 
 app.get('/', function (req, res) {
   res.render('index', { sensorData: sensorData})
 })
+
 
 app.post('/sensor', async function(req, res) {
     try {
@@ -34,7 +38,9 @@ app.post('/sensor', async function(req, res) {
           return;
       }
       console.log("Received sensor data", req.body.data)
-      sensorData = req.body.data;
+      sensorData = req.body.data
+      io.emit('sensor-data', sensorData)
+      res.status(200).send({status: 'OK'})
     }
     catch (err) {
         console.log(err);
@@ -44,8 +50,7 @@ app.post('/sensor', async function(req, res) {
 
 app.use(express.static('public'));
 
-const io = socketIo(server);
-server.listen(3080, () => {
+server.listen(3090, () => {
     console.log('listening on port 3080!');
 });
 

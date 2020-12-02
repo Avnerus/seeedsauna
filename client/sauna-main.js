@@ -21,7 +21,12 @@ const SaunaMain = {
       #title {
         margin-top: 50px;
         color: white;
-        font-size: 72px;
+        font-size: 32px;
+      }
+      @media screen and ( min-height: 800px ) {
+        #title {
+            font-size: 72px;
+        }
       }
       #temperature {
         color: #ff6a21;
@@ -32,10 +37,18 @@ const SaunaMain = {
         margin-top: 20px;
       }
       .label {
-        font-size: 60px;
+        font-size: 48px;
       }
       .value {
-        font-size: 100px;
+        font-size: 60px;
+      }
+      @media screen and ( min-width: 380px ) {
+        .label {
+           font-size: 60px;
+        }
+        .value {
+          font-size: 100px;
+        }
       }
     </style>
     <div id="title">PINGU SAUNA</div>
