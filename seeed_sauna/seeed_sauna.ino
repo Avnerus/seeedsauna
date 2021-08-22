@@ -6,6 +6,8 @@
 
   This example code is in the public domain.
  */
+
+ 
 #include "w600.h"
 #include "Seeed_SHT35.h"
 
@@ -36,11 +38,12 @@
   #define SERIAL Serial
 #endif
 
+
 SHT35 sensor(SCLPIN);
 
 AtWifi wifi;
 
-char req[256];
+char req[100];
 
 const char *TARGET_IP   = "\"sauna.avner.us\""; // This is the IP address for AdafruitIO
 uint16_t TARGET_PORT = 80;
@@ -77,13 +80,12 @@ int connect_to_AP(int retries){
   attempt = 0;
   while (!joined && attempt < retries){
       joined = wifi.sendAT(F("AT+WJOIN")); //join network
-      delay(1500);
+      delay(150);
   } if (!joined){
       debug.println(F("failed to join network"));
       return 0;
   }
 
-  debug.println(F("connected to AP"));
   return 1;
 }
 
@@ -109,20 +111,21 @@ void loop()
   if (!connecting && !sending) {
     debug.println("Checking status");
     wifi.sendAT(F("AT+LKSTT"));
+    delay(150);
     const char* resp = wifi.buffer();
     int wifiStatus = atoi(&(resp[4]));
-    //debug.print("wifi status buffer: "); debug.println(resp[4]);
+    debug.print("wifi status buffer: "); debug.println(resp);
     debug.print("Current wifi status: "); debug.println(wifiStatus);
     
     if (!wifiStatus) {
       connecting = true;
-      delay(1000);
       
       configure_wifi(5);
       if (connect_to_AP(5)) {
+        debug.println(F("connected to AP"));
         connecting = false;
-        //wifiStatus = 1;
         delay(1000);
+        //wifiStatus = 1;
       }
     } else {
           sending = true;
